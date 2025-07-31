@@ -3,7 +3,7 @@ import sys
 from io import StringIO
 from groq import Groq
 
-GROQ_API_KEY = "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"
+GROQ_API_KEY = "gsk_XBh5ThQD"
 
 def check_output_with_groq(user_output, expected_output):
     """Uses GROQ to compare user output with expected output."""

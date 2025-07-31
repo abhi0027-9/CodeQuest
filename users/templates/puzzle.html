@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Word Scramble Game</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .game-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+           
+        }
+
+        .scrambled-word {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-field {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.3);
+        }
+
+        .game-button {
+            transition: all 0.3s ease;
+            transform: translateY(0);
+        }
+
+        .game-button:hover {
+            transform: translateY(-2px);
+        }
+
+        .hint-box {
+            background: rgba(139, 92, 246, 0.1);
+            border-left: 4px solid #8b5cf6;
+        }
+
+        .score-board {
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+            color: white;
+            border-radius: 15px;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .correct-answer {
+            animation: pop 0.3s ease;
+        }
+
+        .modal {
+            backdrop-filter: blur(8px);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+            transition: width 0.3s ease;
+        }
+        .btn-custom {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            color: white;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div style="float: right;">
+        <a href="{% url 'game1' %}" class="btn btn-custom">Python Module Explorer</a>
+        <a href="{% url 'puzzle' %}" class="btn btn-custom">Puzzles</a>
+        <a href="{% url 'games' %}" class="btn btn-custom">Game Page</a>
+    <a href="{% url 'uhome' %}" class="btn btn-custom">Back</a>
+    </div>
+
+    <!-- Main Game Container -->
+    <div class="game-container max-w-4xl mx-auto mt-12 p-8">
+        <h1 class="text-3xl font-bold text-center mb-4">Python Word Scramble</h1>
+
+        <!-- Progress Bar -->
+        <div class="progress-bar mb-8">
+            <div class="progress-fill" id="progressBar" style="width: 0%"></div>
+        </div>
+
+        <!-- Score Board -->
+        <div class="score-board p-4 mb-4 flex justify-between items-center">
+            <div>
+                <span class="text-sm opacity-80">Score</span>
+                <h3 id="score" class="text-2xl font-bold">0</h3>
+            </div>
+            <div>
+                <span class="text-sm opacity-80">Remaining</span>
+                <h3 id="remaining" class="text-2xl font-bold">0</h3>
+            </div>
+        </div>
+
+        <!-- Game Area -->
+        <div class="text-center mb-8">
+            <h2 id="scrambleWord" class="scrambled-word mb-4">WORD</h2>
+            <div id="hint" class="hint-box p-4 text-gray-600 mb-6"></div>
+            
+            <input id="input" type="text" 
+                class="input-field w-full px-4 py-3 rounded-lg text-xl mb-4" 
+                placeholder="Type your answer...">
+            
+            <p id="output" class="text-lg font-medium mb-2">Result:</p>
+        </div>
+
+        <!-- Game Controls -->
+        <div class="grid grid-cols-3 gap-4">
+            <button onclick="check()" 
+                class="game-button bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-medium">
+                Check
+            </button>
+            <button onclick="refresh()" 
+                class="game-button bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium">
+                Next
+            </button>
+            <button onclick="restart()" 
+                class="game-button bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-medium">
+                Restart
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="myModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+        <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4">
+            <div class="text-center">
+                <h3 class="text-2xl font-bold mb-4">🎉 Congratulations!</h3>
+                <p class="text-gray-600 mb-6">
+                    You've completed the game with a score of 
+                    <span id="finalScore" class="font-bold text-indigo-600">0</span>
+                    out of
+                    <span id="maxScore" class="font-bold text-indigo-600">0</span>
+                </p>
+                <button onclick="closeModal()" 
+                    class="game-button bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-lg font-medium">
+                    Play Again
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const words = [
+            "python", "variable", "function", "list", "tuple", "dictionary", "string", "integer",
+            "float", "boolean", "loop", "if", "else", "elif", "while", "for",
+            "break", "continue", "return", "class", "method", "object", "module", "package",
+            "import", "exception", "try", "except", "finally", "raise", "assert", "global",
+            "local", "lambda", "decorator", "inheritance", "polymorphism", "encapsulation", "iterator",
+            "generator"
+        ];
+
+        const hints = [
+            "High-level programming language", "Used to store data", "A block of code that performs a specific task",
+            "Ordered and changeable collection", "Ordered and unchangeable collection", "Unordered and changeable collection", "A sequence of characters", "A whole number",
+            "A number with a decimal point", "A true or false value", "Iterates over items in a sequence", "Executes code based on a condition", "Executes code if the condition is false", "Executes code if the previous conditions are false and the current condition is true", "Executes code while a specified condition is true", "Iterates over a sequence of items",
+            "Stops the loop before it has completed all iterations", "Skips the current iteration and continues with the next iteration", "Exits a function and returns a value", "Defines a blueprint for creating objects", "A function associated with an object", "An instance of a class", "A file containing Python definitions and statements", "A directory of Python modules",
+            "Used to include modules in Python", "Handles errors in Python", "Handles exceptions, runs regardless of whether the exception occurred or not", "Handles exceptions, runs if no error occurred", "Handles exceptions, runs after try block, regardless of the result", "Raises an exception", "Checks if a condition is true", "Declares a global variable", "Declares a local variable",
+            "Creates an anonymous function", "Modifies functions or classes", "Allows one class to inherit characteristics from another class", "Allows for objects of different classes to be treated as objects of a parent class", "Binds data and functions into a single unit", "Provides a way to access elements of a collection sequentially", "Returns a stream of values"
+        ];
+
+        let displayWord = "";
+        let displayHint = "";
+        let score = 0;
+        let maxScore = words.length;
+        let usedWords = new Set();
+        let remainingWords = words.slice(); // Create a copy of words array to track remaining words
+
+        function shuffle(str) {
+            let strArray = Array.from(str);
+            for (let i = 0; i < strArray.length; i++) {
+                let j = Math.floor(Math.random() * strArray.length);
+                [strArray[i], strArray[j]] = [strArray[j], strArray[i]];
+            }
+            return strArray.join("");
+        }
+
+        function check() {
+            let input = document.getElementById("input").value.toLowerCase();
+            let output = document.getElementById("output");
+            if (input === displayWord.toLowerCase()) {
+                output.innerHTML = "Result: Correct";
+                score++;
+                document.getElementById("score").innerText = "Score: " + score;
+                usedWords.add(displayWord);
+            } else {
+                output.innerHTML = "Result: Incorrect";
+            }
+            updateRemaining();
+        }
+
+        function refresh() {
+            if (remainingWords.length === 0) {
+                showModal();
+                return;
+            }
+
+            let index = Math.floor(Math.random() * remainingWords.length);
+            displayWord = remainingWords[index];
+            displayHint = hints[words.indexOf(displayWord)];
+            document.getElementById("scrambleWord").innerText = shuffle(displayWord).toUpperCase();
+            document.getElementById("hint").innerHTML = "<b>Hint:</b> " + displayHint;
+            document.getElementById("output").innerText = "Result:";
+            document.getElementById("input").value = "";
+            remainingWords.splice(index, 1); // Remove displayed word from remaining words
+            updateRemaining();
+        }
+
+        function restart() {
+            score = 0;
+            usedWords.clear();
+            remainingWords = words.slice(); // Reset remaining words to initial state
+            document.getElementById("score").innerText = "Score: " + score;
+            refresh();
+        }
+
+        function updateRemaining() {
+            let remaining = remainingWords.length;
+            document.getElementById("remaining").innerText = "Remaining: " + remaining;
+        }
+
+        function showModal() {
+            let modal = document.getElementById("myModal");
+            let finalScoreElement = document.getElementById("finalScore");
+            finalScoreElement.textContent = score;
+            modal.style.display = "block";
+        }
+
+        function closeModal() {
+            let modal = document.getElementById("myModal");
+            modal.style.display = "none";
+        }
+
+        document.getElementById("maxScore").innerText = "Max Score: " + maxScore;
+        document.getElementById("remaining").innerText = "Remaining: " + words.length;
+        refresh();
+    </script>
+</body>
+</html>

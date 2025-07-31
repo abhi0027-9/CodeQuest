@@ -1,0 +1,228 @@
+{% extends "userhome.html" %}
+{% block content %}
+<div class="container leaderboard-container position-relative" style="z-index: 2; margin-top: 100px;">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="leaderboard-card">
+                <h2 class="text-center mb-4">Global Leaderboard</h2>
+                
+                <!-- Top 3 Winners Section -->
+                {% with top_users=leaderboard|slice:":3" %}
+                <div class="top-winners mb-5">
+                    <div class="row justify-content-center">
+                        <!-- Second Place -->
+                        {% if top_users|length > 1 %}
+                        <div class="col-md-3">
+                            <div class="winner-card second-place">
+                                <div class="position-medal">2</div>
+                                <div class="winner-avatar">
+                                    <i class="material-icons">person</i>
+                                </div>
+                                <h5 class="winner-name">{{ top_users.1.user__name }}</h5>
+                                <p class="winner-score">{{ top_users.1.points }} points</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- First Place -->
+                        {% if top_users|length > 0 %}
+                        <div class="col-md-3">
+                            <div class="winner-card first-place">
+                                <div class="position-medal">1</div>
+                                <div class="winner-avatar">
+                                    <i class="material-icons">person</i>
+                                </div>
+                                <h5 class="winner-name">{{ top_users.0.user__name }}</h5>
+                                <p class="winner-score">{{ top_users.0.points }} points</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Third Place -->
+                        {% if top_users|length > 2 %}
+                        <div class="col-md-3">
+                            <div class="winner-card third-place">
+                                <div class="position-medal">3</div>
+                                <div class="winner-avatar">
+                                    <i class="material-icons">person</i>
+                                </div>
+                                <h5 class="winner-name">{{ top_users.2.user__name }}</h5>
+                                <p class="winner-score">{{ top_users.2.points }} points</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endwith %}
+                
+                <!-- Full Leaderboard Table -->
+                <div class="leaderboard-table">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>User</th>
+                                <th>Challenges Solved</th>
+                                <th>Points</th>
+                                <th>Badge</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in leaderboard %}
+                            <tr {% if user.user__id == request.user.id %}class="table-active"{% endif %}>
+                                <td>{{ user.rank }}</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <i class="material-icons me-2">person</i>
+                                        {% comment %} {{user}} {% endcomment %}
+                                        {{ user.user__student__student_name }}
+                                        {% if user.user__id == request.user.id %}
+                                            <span class="ms-2 badge bg-primary">You</span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td>{{ user.challenges_solved }}</td>
+                                <td>{{ user.points }}</td>
+                                <td>
+                                    <span class="badge {% if user.rank == 1 %}bg-warning{% elif user.rank == 2 %}bg-info{% else %}bg-secondary{% endif %}">
+                                        {% if user.rank == 1 %}
+                                            Elite
+                                        {% elif user.rank == 2 %}
+                                            Pro
+                                        {% else %}
+                                            Rookie
+                                        {% endif %}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .leaderboard-container {
+        padding: 2rem;
+    }
+    
+    .leaderboard-card {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    }
+    
+    .winner-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 15px;
+        padding: 1.5rem;
+        text-align: center;
+        position: relative;
+        transition: transform 0.3s ease;
+    }
+    
+    .winner-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .first-place {
+        transform: translateY(-20px);
+        box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+    }
+    
+    .second-place {
+        box-shadow: 0 0 30px rgba(192, 192, 192, 0.3);
+    }
+    
+    .third-place {
+        box-shadow: 0 0 30px rgba(205, 127, 50, 0.3);
+    }
+    
+    .position-medal {
+        position: absolute;
+        top: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+    }
+    
+    .first-place .position-medal {
+        background: linear-gradient(45deg, #FFD700, #FFA500);
+    }
+    
+    .second-place .position-medal {
+        background: linear-gradient(45deg, #C0C0C0, #A9A9A9);
+    }
+    
+    .third-place .position-medal {
+        background: linear-gradient(45deg, #CD7F32, #8B4513);
+    }
+    
+    .winner-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: #f0f0f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 1rem auto;
+    }
+    
+    .winner-avatar i {
+        font-size: 2rem;
+        color: #666;
+    }
+    
+    .winner-name {
+        margin: 0.5rem 0;
+        font-weight: 600;
+    }
+    
+    .winner-score {
+        color: #666;
+        font-weight: 500;
+    }
+    
+    .leaderboard-table {
+        margin-top: 2rem;
+    }
+    
+    .table {
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    
+    .table thead th {
+        background: rgba(78, 84, 200, 0.1);
+        border: none;
+        padding: 1rem;
+    }
+    
+    .table tbody td {
+        padding: 1rem;
+        vertical-align: middle;
+    }
+    
+    .badge {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+    }
+    .table-active {
+        background-color: rgba(78, 84, 200, 0.1) !important;
+    }
+</style>
+{% endblock %}

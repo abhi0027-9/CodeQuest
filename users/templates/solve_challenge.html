@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeQuest - Python Compiler</title>
+    
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <!-- Poppins Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- CodeMirror -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f7fc;
+        }
+
+        .challenge-container {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-top: 3rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+
+        .challenge-description {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            font-size: 16px;
+        }
+
+        .CodeMirror {
+            height: 400px;
+            border-radius: 10px;
+            font-family: 'Monaco', monospace;
+            font-size: 14px;
+        }
+
+        .output-container {
+            background: #2d2d2d;
+            color: #ffffff;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            min-height: 80px;
+            font-family: 'Monaco', monospace;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+
+        .input-container {
+            background: #f3f3f3;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .btn-custom {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .btn-custom:hover {
+            background-color: #45a049;
+        }
+        
+        .hint-container {
+            background: #fff3cd;
+            color: #856404;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            display: none;
+        }
+        
+        .result-badge {
+            font-size: 14px;
+            padding: 5px 10px;
+            border-radius: 15px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        
+        .result-correct {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .result-incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .result-partial {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <div class="challenge-container">
+        <h2 class="mb-4">Challenge
+            <a href="{% url 'view_challenges' challenge.lang.id %}" class="btn btn-info text-white" style="float: right;">Back</a>
+        </h2>
+        <div class="challenge-description">
+            {{ challenge.question }}
+        </div>
+        <form method="POST">
+            {% csrf_token %}
+            <textarea id="codearea" name="codearea">{{ code }}</textarea>
+            
+            <div class="input-container">
+                <h5>Input:</h5>
+                <div class="form-group">
+                    <textarea class="form-control" id="user_input" name="user_input" rows="3" placeholder="Enter input values here, each on a new line">{{ user_input }}</textarea>
+                    <small class="text-muted">Values that would normally be entered via input() during execution</small>
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <div>
+                    <button type="submit" class="btn btn-custom me-2">
+                        <i class="material-icons" style="vertical-align: middle;">play_arrow</i>
+                        Run Code
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="clearCode()">
+                        <i class="material-icons" style="vertical-align: middle;">clear</i>
+                        Clear
+                    </button>
+                </div>
+                <button type="button" id="hint-button" class="btn btn-outline-warning" onclick="toggleHint()">
+                    <i class="material-icons" style="vertical-align: middle;">lightbulb</i>
+                    Hint
+                </button>
+            </div>
+        </form>
+
+        {% if output or result %}
+        <div class="output-container">
+            <h5>Output:</h5>
+            <pre id="output">{{ output }}</pre>
+            
+            {% if score %}
+            <div class="mt-3">
+                {% if score == 5 %}
+                <div class="result-badge result-correct">Correct Solution! ✓</div>
+                {% elif score > 0 %}
+                <div class="result-badge result-partial">Partially Correct</div>
+                {% else %}
+                <div class="result-badge result-incorrect">Incorrect Solution ✗</div>
+                {% endif %}
+                <!-- <div>{{ result }}</div> -->
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+        
+        <div class="hint-container" id="hint-box">
+            <h5><i class="material-icons" style="vertical-align: middle; font-size: 18px;">lightbulb</i> Hint:</h5>
+            <p>{{ result }}</p>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
+<script>
+    var editor = CodeMirror.fromTextArea(document.getElementById("codearea"), {
+        mode: "python",
+        theme: "monokai",
+        lineNumbers: true,
+        autoCloseBrackets: true,
+        indentUnit: 4,
+        tabSize: 4,
+        lineWrapping: true,
+        extraKeys: {
+            "Tab": function(cm) {
+                cm.replaceSelection("    ", "end");
+            }
+        }
+    });
+
+    function clearCode() {
+        editor.setValue("");
+        document.getElementById('output').textContent = "";
+        document.getElementById('user_input').value = "";
+    }
+    
+    function toggleHint() {
+        var hintBox = document.getElementById('hint-box');
+        if (hintBox.style.display === 'none' || hintBox.style.display === '') {
+            hintBox.style.display = 'block';
+        } else {
+            hintBox.style.display = 'none';
+        }
+    }
+</script>
+</body>
+</html>

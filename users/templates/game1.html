@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Module Explorer</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap');
+        :root {
+            --primary-color: #4e54c8;
+            --secondary-color: #8f94fb;
+            --accent-color: #6c63ff;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1a1c2c 0%, #28314e 100%);
+            min-height: 100vh;
+            color: #e2e8f0;
+        }
+
+        .code-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .module-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .module-card:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .code-block {
+            background: #1a1c2c;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .success-text {
+            color: #4ade80;
+        }
+
+        .error-text {
+            color: #ef4444;
+        }
+        .btn-custom {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            color: white;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div style="float: right;">
+        <a href="{% url 'game1' %}" class="btn btn-custom">Python Module Explorer</a>
+        <a href="{% url 'puzzle' %}" class="btn btn-custom">Puzzles</a>
+        <a href="{% url 'games' %}" class="btn btn-custom">Game Page</a>
+    <a href="{% url 'uhome' %}" class="btn btn-custom">Back</a>
+    </div><br>
+    <div class="max-w-4xl mx-auto mt-10">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-bold mb-4">Python Module Explorer</h1>
+            <p class="text-xl opacity-80">Learn about Python modules and their definitions</p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            <!-- Module Viewer -->
+            <div class="module-card rounded-xl p-6">
+                <h2 class="text-2xl font-semibold mb-4">Current Module</h2>
+                <pre id="moduleContent" class="code-block rounded-lg p-4 code-font text-sm mb-4 overflow-x-auto">
+                    # math_operations.py 
+
+def add(a, b):
+    return a + b
+
+def subtract(a, b):
+    return a - b
+
+PI = 3.14159
+VERSION = "1.0"
+
+class Calculator:
+    def multiply(self, a, b):
+        return a * b
+                </pre>
+                <div class="flex justify-between items-center">
+                    <span id="moduleScore" class="text-lg">Score: 0</span>
+                    <button onclick="nextModule()" class="px-4 py-2 bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors">
+                        Next Module
+                    </button>
+                </div>
+            </div>
+
+            <!-- Question Area -->
+            <div class="module-card rounded-xl p-6">
+                <h2 class="text-2xl font-semibold mb-4">Module Quiz</h2>
+                <div id="questionArea" class="mb-6">
+                    <p class="text-lg mb-4">What component type is <span id="targetComponent" class="font-bold text-yellow-400">add</span>?</p>
+                    <div class="grid grid-cols-1 gap-3">
+                        <button onclick="checkAnswer('function')" class="text-left px-4 py-3 rounded-lg module-card">
+                            Function
+                        </button>
+                        <button onclick="checkAnswer('variable')" class="text-left px-4 py-3 rounded-lg module-card">
+                            Variable
+                        </button>
+                        <button onclick="checkAnswer('class')" class="text-left px-4 py-3 rounded-lg module-card">
+                            Class
+                        </button>
+                        <button onclick="checkAnswer('method')" class="text-left px-4 py-3 rounded-lg module-card">
+                            Method
+                        </button>
+                    </div>
+                </div>
+                <p id="feedback" class="text-lg"></p>
+            </div>
+        </div>
+
+        <!-- Progress Area -->
+        <div class="module-card rounded-xl p-6">
+            <h2 class="text-2xl font-semibold mb-4">Your Progress</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                <div class="p-4 module-card rounded-lg">
+                    <p class="text-sm opacity-80">Functions</p>
+                    <p id="functionScore" class="text-2xl font-bold">0/0</p>
+                </div>
+                <div class="p-4 module-card rounded-lg">
+                    <p class="text-sm opacity-80">Variables</p>
+                    <p id="variableScore" class="text-2xl font-bold">0/0</p>
+                </div>
+                <div class="p-4 module-card rounded-lg">
+                    <p class="text-sm opacity-80">Classes</p>
+                    <p id="classScore" class="text-2xl font-bold">0/0</p>
+                </div>
+                <div class="p-4 module-card rounded-lg">
+                    <p class="text-sm opacity-80">Methods</p>
+                    <p id="methodScore" class="text-2xl font-bold">0/0</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const modules = [
+    {
+        name: 'math_operations.py',
+        content: `# math_operations.py\n
+def add(a, b):
+    return a + b
+
+def subtract(a, b):
+    return a - b
+
+PI = 3.14159
+VERSION = "1.0"
+
+class Calculator:
+    def multiply(self, a, b):
+        return a * b`,
+        components: [
+            { name: 'add', type: 'function' },
+            { name: 'subtract', type: 'function' },
+            { name: 'PI', type: 'variable' },
+            { name: 'VERSION', type: 'variable' },
+            { name: 'Calculator', type: 'class' },
+            { name: 'multiply', type: 'method' }
+        ]
+    }
+
+,
+            {
+                name: 'string_utils.py',
+                content: `# string_utils.py
+
+MAX_LENGTH = 100
+DEFAULT_SEPARATOR = "-"
+
+def reverse_string(text):
+    return text[::-1]
+
+class StringFormatter:
+    def __init__(self):
+        self.separator = DEFAULT_SEPARATOR
+    
+    def format_title(self, text):
+        return text.title()`,
+                components: [
+                    { name: 'MAX_LENGTH', type: 'variable' },
+                    { name: 'DEFAULT_SEPARATOR', type: 'variable' },
+                    { name: 'reverse_string', type: 'function' },
+                    { name: 'StringFormatter', type: 'class' },
+                    { name: 'format_title', type: 'method' }
+                ]
+            }
+        ];
+
+        let currentModule = 0;
+        let currentComponent = 0;
+        let scores = {
+            function: { correct: 0, total: 0 },
+            variable: { correct: 0, total: 0 },
+            class: { correct: 0, total: 0 },
+            method: { correct: 0, total: 0 }
+        };
+
+        function updateModule() {
+            const module = modules[currentModule];
+            document.getElementById('moduleContent').textContent = module.content;
+            updateQuestion();
+            updateScores();
+        }
+
+        function updateQuestion() {
+            const module = modules[currentModule];
+            const component = module.components[currentComponent];
+            document.getElementById('targetComponent').textContent = component.name;
+            document.getElementById('feedback').textContent = '';
+        }
+
+        function checkAnswer(answer) {
+            const module = modules[currentModule];
+            const component = module.components[currentComponent];
+            const correct = answer === component.type;
+            
+            scores[component.type].total++;
+            if (correct) {
+                scores[component.type].correct++;
+                document.getElementById('feedback').textContent = '✅ Correct!';
+                document.getElementById('feedback').className = 'text-lg success-text';
+            } else {
+                document.getElementById('feedback').textContent = `❌ Incorrect. ${component.name} is a ${component.type}.`;
+                document.getElementById('feedback').className = 'text-lg error-text';
+            }
+
+            updateScores();
+            setTimeout(() => {
+                nextComponent();
+            }, 1500);
+        }
+
+        function nextComponent() {
+            const module = modules[currentModule];
+            currentComponent++;
+            if (currentComponent >= module.components.length) {
+                currentComponent = 0;
+                return nextModule();
+            }
+            updateQuestion();
+        }
+
+        function nextModule() {
+            currentModule = (currentModule + 1) % modules.length;
+            currentComponent = 0;
+            updateModule();
+        }
+
+        function updateScores() {
+            document.getElementById('functionScore').textContent = 
+                `${scores.function.correct}/${scores.function.total}`;
+            document.getElementById('variableScore').textContent = 
+                `${scores.variable.correct}/${scores.variable.total}`;
+            document.getElementById('classScore').textContent = 
+                `${scores.class.correct}/${scores.class.total}`;
+            document.getElementById('methodScore').textContent = 
+                `${scores.method.correct}/${scores.method.total}`;
+
+            const totalCorrect = Object.values(scores).reduce((sum, score) => sum + score.correct, 0);
+            const totalQuestions = Object.values(scores).reduce((sum, score) => sum + score.total, 0);
+            document.getElementById('moduleScore').textContent = `Score: ${totalCorrect}/${totalQuestions}`;
+        }
+
+        // Initialize the game
+        updateModule();
+    </script>
+</body>
+</html>

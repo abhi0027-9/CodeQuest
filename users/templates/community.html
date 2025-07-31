@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeQuest - Community</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4e54c8;
+            --secondary-color: #8f94fb;
+            --accent-color: #6c63ff;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .home {
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-bottom: 2rem;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar.scrolled .nav-link,
+        .navbar.scrolled .navbar-brand {
+            color: #333 !important;
+        }
+
+        .community-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .community-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.25);
+        }
+
+        .discussion-card {
+            background: #fff;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .discussion-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-custom {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+
+        .tag {
+            background: rgba(78, 84, 200, 0.1);
+            color: var(--primary-color);
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-right: 0.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .tag:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .tag.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.2rem;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-bar {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 30px;
+            padding: 12px 25px;
+            width: 100%;
+            max-width: 500px;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .search-bar:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(78, 84, 200, 0.2);
+            border-color: var(--primary-color);
+        }
+
+        .comment-section {
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .comment {
+            background: white;
+            border-radius: 8px;
+            padding: 0.8rem;
+            margin-bottom: 0.8rem;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .reaction-btn {
+            background: transparent;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            padding: 5px 15px;
+            transition: all 0.3s ease;
+            color: #666;
+        }
+
+        .reaction-btn:hover {
+            background: rgba(78, 84, 200, 0.1);
+            color: var(--primary-color);
+        }
+
+        .reaction-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .modal-content {
+            border-radius: 20px;
+            border: none;
+        }
+
+        .modal-header {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .modal-header .btn-close {
+            color: white;
+        }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            padding: 0.8rem;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .form-control:focus, .form-select:focus {
+            box-shadow: 0 0 0 3px rgba(78, 84, 200, 0.2);
+            border-color: var(--primary-color);
+        }
+
+        .discussion-stats {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .loading-skeleton {
+            animation: skeleton-loading 1s linear infinite alternate;
+        }
+
+        @keyframes skeleton-loading {
+            0% {
+                background-color: rgba(0, 0, 0, 0.05);
+            }
+            100% {
+                background-color: rgba(0, 0, 0, 0.1);
+            }
+        }
+    </style>
+</head>
+<body class="home">
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand text-white" href="{% url 'uhome' %}">
+                <strong>CodeQuest</strong>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'challenge_languages' %}">Challenges</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'lead' %}">Leaderboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'community' %}">Community</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'compiler_python' %}">Compiler</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'materials' %}">Materials</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'games' %}">Games</a>
+                    </li>
+                     <li class="nav-item">
+                        <a class="btn btn-custom ms-2" href="{% url 'main' %}">LogOut</a>
+                    </li> 
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" style="margin-top: 100px;">
+        <div class="community-card">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+                <form method="GET" class="flex-grow-1">
+                    <div class="d-flex gap-2">
+                        <input type="text" name="search" placeholder="Search discussions..." class="search-bar" value="{{ request.GET.search }}">
+                        <button type="submit" class="btn btn-custom">
+                            <i class="material-icons">search</i>
+                        </button>
+                    </div>
+                </form>
+                <button class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#newDiscussionModal">
+                    <i class="material-icons align-middle me-1">add</i>
+                    Start Discussion
+                </button>
+            </div>
+            
+            <div class="d-flex flex-wrap gap-2 mb-4">
+                <a href="{% url 'community' %}" class="tag active">All</a>
+                {% for tag in tags %}
+                    <a href="?tag={{ tag.name }}" class="tag">{{ tag.name }}</a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="community-card">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="mb-0">Recent Discussions</h4>
+                <!-- <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        Sort by
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="?sort=recent">Most Recent</a></li>
+                        <li><a class="dropdown-item" href="?sort=popular">Most Popular</a></li>
+                        <li><a class="dropdown-item" href="?sort=active">Most Active</a></li>
+                    </ul>
+                </div> -->
+            </div>
+            
+            {% for com in community %}
+            
+            <div class="discussion-card">
+                {% if request.user.student.student_name == com.author.student.student_name %}
+                <form action="{% url 'delete_discussion' com.id %}" method="POST" class="d-inline" style="float:right;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                </form>
+                {% endif %}
+                <div class="d-flex gap-3">
+                    <div class="user-avatar">{{ com.author.student.student_name|first|upper }}</div>
+                    
+                    <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-start">
+                            
+                            <div>
+                                <h5 class="mb-2">{{com.title}}</h5>
+                                
+                                
+                                <div class="d-flex flex-wrap gap-2 mb-3">
+                                    {% for tag in com.tags.all %} 
+                                        <span class="tag">{{ tag.name }}</span>
+                                    {% endfor %}
+                                </div>
+                                <p class="text-muted mb-2">{{com.content}}</p>
+                                <small class="text-muted d-block mb-3">
+                                    Posted by {{request.user.student.student_name}} • {{ com.created_at|timesince }} ago
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-3">
+                            <form method="POST" action="{% url 'like_discussion' com.id %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="reaction-btn {% if request.user in discussion.liked_by.all %}active{% endif %}">
+                                    👍
+                                    <span>{{ com.likes }}</span>
+                                </button>
+                            </form>
+                            <p class="reaction">
+                                💬
+                                <span>{{ com.comments.count }}</span>
+                            </p>
+                            {% comment %} <a class="reaction">
+                                <i class="material-icons align-middle">share</i>
+                                <span>Share</span>
+                            </a> {% endcomment %}
+                        </div>
+
+                        {% if com.comments.all %}
+                        <div class="comment-section" style="height: 250px;overflow-y: scroll;">
+                            <h6 class="mb-3">Comments ({{ com.comments.count }})</h6>
+                            {% for comment in com.comments.all|slice:":3" %}
+                                <div class="comment">
+                                    <div class="d-flex gap-2 align-items-center mb-2">
+                                        <div class="user-avatar" style="width: 30px; height: 30px; font-size: 0.8rem;">
+                                            {{ comment.author.student.student_name|first|upper }}
+                                        </div>
+                                        <strong>{{ comment.author.student.student_name }}</strong>
+                                        <small class="text-muted">• {{ comment.created_at|timesince }} ago</small>
+                                    </div>
+                                    <p class="mb-0">{{ comment.content }}</p>
+                                </div>
+                            {% endfor %}
+                            <!-- {% if com.comments.count > 3 %}
+                                <button class="btn btn-link">View all comments...</button>
+                            {% endif %} -->
+                        </div>
+                        {% endif %}
+
+                        <form method="POST" action="{% url 'add_comment' com.id %}" class="mt-3">
+                            {% csrf_token %}
+                            <div class="d-flex gap-2">
+                                <input type="text" name="content" class="form-control" placeholder="Write a comment..." required>
+                                <button type="submit" class="btn btn-custom">
+                                    <i class="material-icons">send</i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center py-5">
+                <i class="material-icons" style="font-size: 48px; color: #ccc;">forum</i>
+                <p class="text-muted mt-3">No discussions yet. Be the first to start a discussion!</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- New Discussion Modal -->
+    <div class="modal fade" id="newDiscussionModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Start New Discussion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="{% url 'create_discussion' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Title</label>
+                            <input type="text" class="form-control" name="title" placeholder="What's on your mind?" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Content</label>
+                            <textarea class="form-control" name="content" rows="5" placeholder="Share your thoughts, questions, or ideas..." required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Tags</label>
+                            <select class="form-select" name="tags" multiple required>
+                                <option value="Python">Python</option>
+                                <option value="Algorithms">Algorithms</option>
+                                <option value="Data Structures">Data Structures</option>
+                                <option value="Help Needed">Help Needed</option>
+                                <option value="Project Showcase">Project Showcase</option>
+                                <option value="Discussion">Discussion</option>
+                                <option value="Tips & Tricks">Tips & Tricks</option>
+                                <option value="Career">Career</option>
+                            </select>
+                            <small class="text-muted">Hold Ctrl (Cmd on Mac) to select multiple tags</small>
+                        </div>
+                        <div class="text-end">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-custom">Create Discussion</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Handle like button clicks
+        document.addEventListener('DOMContentLoaded', function() {
+            // Like button functionality
+            document.querySelectorAll('.reaction-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    if (!this.classList.contains('active')) {
+                        this.classList.add('active');
+                        const countSpan = this.querySelector('span');
+                        countSpan.textContent = parseInt(countSpan.textContent) + 1;
+                    }
+                });
+            });
+
+            // Comment form enhancement
+            document.querySelectorAll('form[action*="add_comment"]').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    const input = this.querySelector('input[name="content"]');
+                    if (!input.value.trim()) {
+                        e.preventDefault();
+                        input.classList.add('is-invalid');
+                    }
+                });
+            });
+
+            // Tags selection enhancement
+            const tagSelect = document.querySelector('select[name="tags"]');
+            if (tagSelect) {
+                tagSelect.addEventListener('change', function() {
+                    const selectedOptions = Array.from(this.selectedOptions);
+                    if (selectedOptions.length > 4) {
+                        alert('Please select up to 4 tags only');
+                        for (let i = 4; i < selectedOptions.length; i++) {
+                            selectedOptions[i].selected = false;
+                        }
+                    }
+                });
+            }
+        });
+
+        // CSRF token helper function
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Show loading state
+        function showLoading(element) {
+            element.classList.add('loading-skeleton');
+        }
+
+        function hideLoading(element) {
+            element.classList.remove('loading-skeleton');
+        }
+    </script>
+</body>
+</html>

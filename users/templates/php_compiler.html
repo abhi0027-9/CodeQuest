@@ -1,0 +1,275 @@
+{% extends "userhome.html" %}
+{% block content %}
+<div class="container-fluid compiler-container position-relative" style="z-index: 2; margin-top: 80px;">
+    <div class="challenge-description">
+        {{ challenge.question }}
+    </div>
+    <div class="row h-100">
+        <!-- Left Panel - Editor -->
+        <div class="col-md-7">
+            <div class="editor-panel">
+                <div class="panel-header">
+                    <h4><i class="material-icons">code</i> PHP Editor</h4>
+                     <div class="editor-controls">
+                        {% comment %} <button type="button" class="btn-action" onclick="toggleFullScreen()">
+                            <i class="material-icons">fullscreen</i>
+                        </button> {% endcomment %}
+                        <a href="{% url 'view_challenges' challenge.lang.id %}" class="btn-action" >
+                            Back
+                        </a>
+                    </div> 
+                </div>
+                
+                <form method="post" action="" id="codeForm">
+                    {% csrf_token %}
+                    <textarea id="code" name="code">{{ code }}</textarea>
+                    <div class="editor-footer">
+                        <button type="submit" class="btn-compile">
+                            <i class="material-icons">play_arrow</i> Run Code
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Right Panel - Output -->
+        <div class="col-md-5">
+            <div class="output-panel">
+                <div class="panel-header">
+                    <h4><i class="material-icons">terminal</i> Output</h4>
+                    {% comment %} <div class="output-controls">
+                        <button type="button" class="btn-action" onclick="clearOutput()">
+                            <i class="material-icons">clear_all</i>
+                        </button>
+                        <button type="button" class="btn-action" onclick="copyOutput()">
+                            <i class="material-icons">content_copy</i>
+                        </button>
+                    </div> {% endcomment %}
+                </div>
+
+                <div class="output-content" id="outputContent">
+                    {% if errors %}
+                        <div class="error-section">
+                            <div class="error-badge">Error</div>
+                            <pre class="error-message">{{ errors }}</pre>
+                        </div>
+                    {% endif %}
+                    {% if output %}
+                        <pre class="output-message">{{ output }}</pre>
+                        <pre class="output-message">{{ result }}</pre>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .challenge-description {
+        background: #f8fafc;
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+        font-size: 16px;
+    }
+    #code {
+        width: 100%;
+        height: 400px;
+        font-family: "Fira Code", monospace;
+        font-size: 14px;
+        background-color: #282c34; /* Dark background */
+        color: #ffffff; /* White text */
+        border: 1px solid #444; /* Subtle border */
+        border-radius: 8px; /* Smooth corners */
+        padding: 10px;
+        outline: none;
+        resize: none; /* Disable resizing */
+        overflow: auto;
+        line-height: 1.5;
+    }
+    
+    /* Adding a slight focus effect */
+    #code:focus {
+        border-color: #61dafb; /* Light blue border on focus */
+        box-shadow: 0 0 5px rgba(97, 218, 251, 0.5);
+    }
+    
+    .compiler-container {
+        min-height: calc(100vh - 80px);
+        padding: 20px;
+    }
+
+    .editor-panel, .output-panel {
+        background: #1e1e1e;
+        border-radius: 12px;
+        height: calc(100vh - 120px);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .panel-header {
+        background: #252526;
+        padding: 15px;
+        border-radius: 12px 12px 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: #e0e0e0;
+    }
+
+    .panel-header h4 {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.1rem;
+    }
+
+    .editor-controls, .output-controls {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-action {
+        background: transparent;
+        border: none;
+        color: #a0a0a0;
+        padding: 5px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-action:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+    }
+
+    .CodeMirror {
+        flex-grow: 1;
+        font-family: 'Monaco', monospace;
+        font-size: 14px;
+    }
+
+    .editor-footer {
+        padding: 15px;
+        background: #252526;
+        border-radius: 0 0 12px 12px;
+    }
+
+    .btn-compile {
+        background: #4CAF50;
+        color: white;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-compile:hover {
+        background: #45a049;
+        transform: translateY(-2px);
+    }
+
+    .output-content {
+        flex-grow: 1;
+        padding: 15px;
+        overflow-y: auto;
+        color: #e0e0e0;
+    }
+
+    .error-section {
+        background: rgba(255, 0, 0, 0.1);
+        border-radius: 6px;
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+
+    .error-badge {
+        background: #ff4444;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 4px;
+        display: inline-block;
+        margin-bottom: 10px;
+    }
+
+    .error-message {
+        color: #ff6b6b;
+        margin: 0;
+    }
+
+    .output-message {
+        margin: 0;
+        color: #a0e8af;
+    }
+
+    pre {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+    }
+</style>
+
+<!-- CodeMirror -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/php/php.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/matchbrackets.min.js"></script>
+
+<script>
+    let editor;
+    document.addEventListener('DOMContentLoaded', function() {
+        editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+            mode: "application/x-httpd-php", // Alternative mode for PHP
+            theme: "dracula", // Different theme
+            lineNumbers: true,
+            matchBrackets: true,
+            autoCloseBrackets: true,
+            indentUnit: 2, // Using 2 spaces instead of 4
+            tabSize: 2,
+            styleActiveLine: true,
+            lineWrapping: false, // Disabling line wrapping for a different experience
+            foldGutter: true, // Enable code folding
+            gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
+        });
+    });
+    
+        
+        // Set initial code if exists
+        {% if code %}
+            editor.setValue(`{{ code|escapejs }}`);
+        {% endif %}
+    });
+
+    // Toggle fullscreen
+    function toggleFullScreen() {
+        const editorPanel = document.querySelector('.editor-panel');
+        if (!document.fullscreenElement) {
+            editorPanel.requestFullscreen();
+        } else {
+            document.exitFullscreen();
+        }
+    }
+
+    // Reset editor
+    function resetEditor() {
+        editor.setValue("");
+    }
+
+    // Clear output
+    function clearOutput() {
+        document.getElementById('outputContent').innerHTML = '';
+    }
+
+    // Copy output
+    function copyOutput() {
+        const output = document.querySelector('.output-message')?.innerText || '';
+        navigator.clipboard.writeText(output).then(() => {
+            alert('Output copied to clipboard!');
+        });
+    }
+</script>
+{% endblock %}

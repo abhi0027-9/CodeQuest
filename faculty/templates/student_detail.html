@@ -1,0 +1,209 @@
+{% extends "faculty_home.html" %}
+{% load static %}
+{% block adminhome %}
+
+<style>
+    .results-container {
+        padding: 2rem;
+        background: #f8fafc;
+        min-height: 100vh;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding: 0 1rem;
+    }
+
+    .results-title {
+        color: #1e293b;
+        font-size: 2rem;
+        font-weight: 700;
+        position: relative;
+    }
+
+    .results-title:after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+        width: 60px;
+        height: 4px;
+        background: linear-gradient(45deg, #4f46e5, #6366f1);
+        border-radius: 2px;
+    }
+
+    .results-grid {
+        display: grid;
+        gap: 1.5rem;
+        padding: 1rem;
+    }
+
+    .result-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+
+    .result-header {
+        background: #f1f5f9;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .student-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .student-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .student-name {
+        font-weight: 600;
+        color: #1e293b;
+    }
+
+    .result-content {
+        padding: 1.5rem;
+    }
+
+    .question-text {
+        color: #1e293b;
+        font-size: 1.1rem;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+
+    .result-meta {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .meta-item {
+        padding: 0.75rem;
+        background: #f8fafc;
+        border-radius: 8px;
+    }
+
+    .meta-label {
+        font-size: 0.875rem;
+        color: #64748b;
+        margin-bottom: 0.25rem;
+    }
+
+    .meta-value {
+        font-weight: 600;
+        color: #1e293b;
+    }
+
+    .score-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-weight: 600;
+    }
+
+    .score-badge.high {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .score-badge.medium {
+        background: #fef9c3;
+        color: #854d0e;
+    }
+
+    .score-badge.low {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .feedback-section {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    @media (max-width: 768px) {
+        .results-container {
+            padding: 1rem;
+        }
+
+        .meta-item {
+            padding: 0.5rem;
+        }
+    }
+</style>
+
+<div class="results-container">
+    <div class="page-header">
+        <h2 class="results-title">Student Submissions</h2>
+    </div>
+
+    <div class="results-grid">
+        {% for result in results %}
+        <div class="result-card">
+            <div class="result-header">
+                <div class="student-info">
+                    <div class="student-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div>
+                        <div class="student-name">{{ result.user.student.student_name }}</div>
+                        <div class="text-sm text-gray-500">Attempted {{ result.attempt_time|date:"F j, Y, g:i a" }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="result-content">
+                <p class="question-text">{{ result.question.question }}</p>
+                
+                <div class="result-meta">
+                    <div class="meta-item">
+                        <div class="meta-label">Score</div>
+                        <div class="meta-value">
+                            <span class="score-badge {% if result.score >= 4 %}high{% elif result.score >= 2 %}medium{% else %}low{% endif %}">
+                                {{ result.score }}/5
+                            </span>
+                        </div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-label">Status</div>
+                        <div class="meta-value">
+                            {% if result.is_correct %}
+                            <span class="text-green-600"><i class="fas fa-check-circle"></i> Correct</span>
+                            {% else %}
+                            <span class="text-red-600"><i class="fas fa-times-circle"></i> Needs Improvement</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                {% if result.feedback %}
+                <div class="feedback-section">
+                    <div class="meta-label">Feedback</div>
+                    <div class="mt-2">{{ result.feedback }}</div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

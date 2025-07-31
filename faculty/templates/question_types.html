@@ -1,0 +1,153 @@
+{% extends "faculty_home.html" %}
+{% load static %}
+{% block adminhome %}
+{% load custom_filters %}
+
+<style>
+    .cards-container {
+        padding: 2rem;
+        background: #f8fafc;
+        min-height: 100vh;
+    }
+
+    .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+        padding: 1rem;
+    }
+
+    .lang-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+        overflow: hidden;
+    }
+
+    .lang-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    .lang-card a {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+    }
+
+    .card-content {
+        padding: 1.5rem;
+    }
+
+    .lang-icon {
+        background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+
+    .lang-icon i {
+        color: white;
+        font-size: 1.5rem;
+    }
+
+    .lang-name {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 0.5rem;
+    }
+
+    .card-footer {
+        padding: 1rem 1.5rem;
+        background: #f8fafc;
+        border-top: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .questions-count {
+        color: #6b7280;
+        font-size: 0.875rem;
+    }
+
+    .arrow-icon {
+        color: #4f46e5;
+        transition: transform 0.2s;
+    }
+
+    .lang-card:hover .arrow-icon {
+        transform: translateX(4px);
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 3rem;
+        position: relative;
+    }
+
+    .section-title {
+        color: #1e293b;
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        position: relative;
+        display: inline-block;
+    }
+
+    .section-title:after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 50px;
+        height: 4px;
+        background: linear-gradient(45deg, #4f46e5, #6366f1);
+        border-radius: 2px;
+    }
+
+    @media (max-width: 640px) {
+        .cards-container {
+            padding: 1rem;
+        }
+
+        .cards-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="cards-container">
+    <div class="section-header">
+        <h2 class="section-title">Programming Languages</h2>
+    </div>
+
+    <div class="cards-grid">
+        {% for cls in lang %}
+        <div class="lang-card">
+            <a href="{% url 'questions_view' cls.id %}">
+                <div class="card-content">
+                    <div class="lang-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3 class="lang-name">{{ cls.lang }}</h3>
+                </div>
+                <div class="card-footer">
+                    <span class="questions-count">View Questions</span>
+                    <i class="fas fa-arrow-right arrow-icon"></i>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Modal code remains the same -->
+{% endblock %}

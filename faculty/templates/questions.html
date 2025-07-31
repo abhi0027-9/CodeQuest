@@ -1,0 +1,266 @@
+{% extends "faculty_home.html" %}
+{% load static %}
+{% block adminhome %}
+
+<style>
+    .questions-container {
+        padding: 2rem;
+        background: #f8fafc;
+        min-height: 100vh;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding: 0 1rem;
+    }
+
+    .language-title {
+        color: #1e293b;
+        font-size: 2rem;
+        font-weight: 700;
+        position: relative;
+    }
+
+    .language-title:after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+        width: 60px;
+        height: 4px;
+        background: linear-gradient(45deg, #4f46e5, #6366f1);
+        border-radius: 2px;
+    }
+
+    .add-question-btn {
+        background: linear-gradient(45deg, #4f46e5, #6366f1);
+        color: white;
+        border: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .add-question-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+        color: white;
+    }
+
+    .questions-grid {
+        display: grid;
+        gap: 1.5rem;
+        padding: 1rem;
+    }
+
+    .question-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+
+    .question-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.15);
+    }
+
+    .question-content {
+        padding: 1.5rem;
+    }
+
+    .question-text {
+        color: #1e293b;
+        font-size: 1.1rem;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+
+    .question-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 1rem;
+        border-top: 1px solid #e2e8f0;
+        font-size: 0.875rem;
+        color: #64748b;
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .user-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Modal Styles */
+    .modal-content {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+
+    .modal-header {
+        background: linear-gradient(45deg, #4f46e5, #6366f1);
+        color: white;
+        border-radius: 20px 20px 0 0;
+        padding: 1.5rem;
+    }
+
+    .modal-title {
+        color: white;
+        font-weight: 600;
+    }
+
+    .modal-body {
+        padding: 2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        color: #1e293b;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .form-control {
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        transition: all 0.2s ease;
+    }
+
+    .form-control:focus {
+        border-color: #4f46e5;
+        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+    }
+
+    textarea.form-control {
+        min-height: 150px;
+        resize: vertical;
+    }
+
+    .btn-submit {
+        background: linear-gradient(45deg, #4f46e5, #6366f1);
+        color: white;
+        padding: 0.75rem 2rem;
+        border-radius: 10px;
+        border: none;
+        font-weight: 600;
+        width: 100%;
+        transition: all 0.3s ease;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+    }
+
+    @media (max-width: 768px) {
+        .questions-container {
+            padding: 1rem;
+        }
+
+        .page-header {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .add-question-btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
+<div class="questions-container">
+    <div class="page-header">
+        <h2 class="language-title">{{ language.lang }} Questions</h2>
+        <button type="button" class="add-question-btn" data-bs-toggle="modal" data-bs-target="#addQuestionModal">
+            <i class="fas fa-plus"></i> Add Question
+        </button>
+    </div>
+
+    <div class="questions-grid">
+        {% for question in questions %}
+        <div class="question-card">
+            <a href="{% url 'student_results' question.id %}" style="text-decoration: none;">
+            <div class="question-content">
+                <p class="question-text">{{forloop.counter}} . {{ question.question }}</p>
+                <div class="question-meta">
+                    <div class="user-info">
+                        <div class="user-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <span>{{ question.user.name }}</span>
+                    </div>
+                    <div class="question-actions">
+                        {% if request.user == question.user %}
+                        
+                            <a href="{% url 'delete_ques' que_id=question.id pk=question.lang.id %}" class="text-indigo-600 hover:text-indigo-800">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                     
+                        {% endif %}
+                    </div>
+                    {% comment %} <div class="question-actions">
+                        {% if request.user == question.user %}
+                        <a href="#" class="text-indigo-600 hover:text-indigo-800">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        {% endif %}
+                    </div> {% endcomment %}
+                </div>
+            </div>
+        </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Add Question Modal -->
+<div class="modal fade" id="addQuestionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Question</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'add_question' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="lang_id" value="{{ language.id }}">
+                    <div class="form-group">
+                        <label for="question">Question</label>
+                        <textarea class="form-control" id="question" name="question" rows="4" required placeholder="Enter your question here..."></textarea>
+                    </div>
+                    <button type="submit" class="btn-submit">Submit Question</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

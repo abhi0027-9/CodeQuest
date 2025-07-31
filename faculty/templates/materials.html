@@ -1,0 +1,382 @@
+{% extends "faculty_home.html" %}
+{% load static %}
+{% block adminhome %}
+{% load custom_filters %}
+<style>
+    /* Modern Container Styles */
+    .materials-wrapper {
+        padding: 0.5rem;
+        background: #f8fafc;
+    }
+
+    /* Card Styles */
+    .list-card {
+        background: white;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+        transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+        margin-bottom: 1.5rem;
+    }
+
+    .list-card:hover {
+        box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    /* Button Styles */
+    .action-button {
+        background: linear-gradient(45deg, #4f46e5, #6366f1);
+        color: white;
+        border: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.1);
+    }
+
+    .action-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+        color: white;
+    }
+
+    .action-button i {
+        font-size: 1.1rem;
+    }
+
+    /* Table Styles */
+    .table {
+        margin: 0;
+    }
+
+    .table thead th {
+        background: #f8fafc;
+        color: #1e293b;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.875rem;
+        letter-spacing: 0.05em;
+        border: none;
+        padding: 1rem;
+    }
+
+    .table tbody tr {
+        transition: all 0.2s ease;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f1f5f9;
+    }
+
+    .table td {
+        padding: 1rem;
+        vertical-align: middle;
+        color: #334155;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    /* Header Styles */
+    .section-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+
+    .section-title {
+        color: #1e293b;
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        position: relative;
+        display: inline-block;
+    }
+
+    .section-title:after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 50px;
+        height: 4px;
+        background: linear-gradient(45deg, #4f46e5, #6366f1);
+        border-radius: 2px;
+    }
+
+    /* Action Icons */
+    .delete-icon {
+        color: #ef4444;
+        transition: all 0.2s ease;
+        padding: 0.5rem;
+        border-radius: 8px;
+    }
+
+    .delete-icon:hover {
+        background-color: #fee2e2;
+        color: #dc2626;
+    }
+
+    /* Modal Styles */
+    .modal-content {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+
+    .modal-header {
+        background: linear-gradient(45deg, #4f46e5, #6366f1);
+        color: white;
+        border-radius: 20px 20px 0 0;
+        padding: 1.5rem;
+    }
+
+    .modal-title {
+        color: white;
+        font-weight: 600;
+    }
+
+    .btn-close {
+        color: white;
+        opacity: 1;
+    }
+
+    .modal-body {
+        padding: 2rem;
+    }
+
+    /* Form Styles */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        color: #1e293b;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .form-control {
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        transition: all 0.2s ease;
+    }
+
+    .form-control:focus {
+        border-color: #4f46e5;
+        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+    }
+
+    .btn-submit {
+        background: linear-gradient(45deg, #4f46e5, #6366f1);
+        color: white;
+        padding: 0.75rem 2rem;
+        border-radius: 10px;
+        border: none;
+        font-weight: 600;
+        width: 100%;
+        transition: all 0.3s ease;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .materials-wrapper {
+            padding: 1rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+        }
+
+        .action-button {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    /* Animation */
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .list-card {
+        animation: slideIn 0.4s ease-out forwards;
+    }
+</style>
+
+<div class="materials-wrapper">
+    <div class="section-header">
+        <h2 class="section-title"> Materials</h2>
+    </div>
+
+    <div class="container">
+        <div class="row mb-4">
+            
+                
+            
+             
+        </div>
+
+        <div class="row">
+            <button type="button" class="action-button w-100 mb-3" data-bs-toggle="modal" data-bs-target="#addNotesModal">
+                <i class="fas fa-plus-circle"></i> Add Notes
+            </button>
+                <div class="list-card">
+                    <div class="card-body">
+                        <h3 class="mb-4 text-center" style="color: #1e293b; font-weight: 600;">Study Links</h3>
+                        <div class="table-responsive" style="height: 300px;overflow-x: scroll;">
+                            <table class="table" >
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Link</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for cls in note %}
+                                    <tr>
+                                        <td>{{cls.name}}</td>
+                                        <td>
+                                            <a href="{% if cls.text|slice:':4' == 'http' %}{{ cls.text }}{% else %}https://{{ cls.text }}{% endif %}" 
+                                               target="_blank">
+                                                {{ cls.text }}
+                                            </a>
+                                        </td>
+                                        
+                                        
+                                        <td class="text-end">
+                                            <a href="{% url 'delete_note' cls.id %}" class="delete-icon">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+          
+                <button type="button" class="action-button w-100 mb-3" data-bs-toggle="modal" data-bs-target="#addFilesModal">
+                    <i class="fas fa-plus-circle"></i> Add Files
+                </button>
+          
+                <div class="list-card">
+                    <div class="card-body">
+                        <h3 class="mb-4 text-center" style="color: #1e293b; font-weight: 600;">Files</h3>
+                        <div class="table-responsive" style="height: 300px;overflow-x: scroll;">
+                            <table class="table" >
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>File</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody >
+                                    {% for cls in file %}
+                                        <tr>
+                                    <td>{{cls.name}}</td>
+                                    <td>
+                                        {% if cls.file %}
+                                            {{ cls.file.name|split:'/'|last }}
+                                            <a href="{{ cls.file.url }}" target="_blank" class="ms-2">
+                                                <i class="fas fa-download text-primary"></i>
+                                            </a>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end">
+                                        <a href="{% url 'delete_file' cls.id %}" class="delete-icon">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            
+        </div>
+    </div>
+</div>
+<!-- Add Notes Modal -->
+<div class="modal fade" id="addNotesModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Notes</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="custom-form">
+                    <form action="{% url 'add_notes' %}" method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="note_name" class="required-field">Name</label>
+                            <input type="text" name="name" id="note_name" class="form-control" required placeholder="Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="note_text" class="required-field">Link</label>
+                            <textarea name="text" id="note_text" class="form-control" rows="4" placeholder="www.example.com"></textarea>
+                        </div>
+                        <button type="submit" class="btn-submit">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Files Modal -->
+<div class="modal fade" id="addFilesModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Files</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="custom-form">
+                    <form action="{% url 'add_files' %}" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="name" class="required-field">Name</label>
+                            <input type="text" name="name" id="file_name" class="form-control" required placeholder="Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="file_upload" class="required-field">File</label>
+                            <input type="file" name="file" id="file_upload" class="form-control">
+                        </div>
+                        <button type="submit" class="btn-submit">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modals remain the same but inherit new styles -->
+{% endblock %}

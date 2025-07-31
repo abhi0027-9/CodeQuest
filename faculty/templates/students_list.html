@@ -1,0 +1,53 @@
+{% extends "faculty_home.html" %}
+{% load static %}
+{% block adminhome %}
+
+
+<div class="card list-card mb-4">
+    <div class="card-body">
+        <h3 class="card-title text-center mb-4">
+            <i class="material-icons text-success me-2" style="font-size: 36px;">groups</i>
+            Students List
+            <a href="{% url 'add-stu' %}" style="float: right;" class="btn btn-primary text-white" >Add Students</a>
+        </h3>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Gender</th>
+                    <th>Age</th>
+                    <th>Photo</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stu in students %}
+                <tr>
+                    <td>{{stu.std_id}}</td>
+                     <td><a href="{% url 'student_detail' stu.id %}" style="text-decoration:none;"> {{stu.student_name}} </a></td>
+                    <td>{{stu.email}}</td>
+                    <td>{{stu.gender}}</td>
+                    <td>{{stu.age}}</td>
+                    <td><img src="{{stu.img.url}}" alt="" height="40px" width="60px"> </td>
+                    <td>
+                        <a href="{% url 'edit-stu' pk=stu.id %}" class="edit-icon" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        
+                    </td>
+                    <td>
+                        <a href="{% url 'del-stu' pk=stu.id %}" class="delete-icon" title="Delete">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    </td>
+                </tr>
+          
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
